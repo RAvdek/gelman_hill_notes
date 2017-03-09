@@ -10,7 +10,9 @@ library(ggplot2)
 # Transformations / vectorization
 
 Most of the chapter is deicated to this:
+
 - Vectorize input data to make model more interpretable
+
   - When predictors are shifted to from `var` to `var-mean(var)`, intercepts give expected values accross the entire population.
   - Scale variables so that the "how do things change when a single predictor is modified" inprepretation is easy to read. Eg. consider kilometers vs meters as units, etc.
   - (Not discussed in text) Regression is scale-invariant when there is no regularization. Have to be careful about scaling when using regularization, though it seems regularization is more for predictive rather than interpretation use-case.
@@ -30,8 +32,10 @@ ggplot() +
   geom_line(aes(x, x), df, size=1) +
   geom_line(aes(x, pred), df, size=1)
 ```
+
 - How to interpret models after log transformed output variables.
 - More on transformations:
+
   - loglog transform of output. Is this useful?
   - square root transformation -- maybe useful if predicting a squared quantity like Euclidean distance?
   - Using continuous rather than discrete: The book markets not replacing continuous variables with discrete ones because of information loss around 'borderline' data. 
@@ -40,6 +44,7 @@ ggplot() +
 # Building models for prediction
 
 General principals:
+
 - include everything you think might reasonably contribute to outcome
 - consider combining predictors into "total scores" rather than including individual ones.
 - Consider including interactions for inputs which have large effects
