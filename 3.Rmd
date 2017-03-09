@@ -1,0 +1,66 @@
+------
+title: 2 Probability and stats
+output: md_document
+------
+
+```{r}
+library(ggplot2)
+```
+
+# 3.2: Multivariate models
+- Ideally, coeffs in a mutivariate linear model would tell us how much outcome varies when a predictor is varied, *keeping all other predictors fixed*.
+- This interpretation is not always possible because of collinearity of input data.
+- This is also often impractical if, for example, we want polynomial transformations: `y ~ 1 + x + x**2`
+
+## Counterfactual + predictive interpretations
+- Nuances regarding the above definition: I think it goes...
+- **predictive interpretation**: What do we expect when we *observe* two individuals who are the the same except for difference in a single predictor?
+- **counterfactual interpretation**: What do we expect if we *modify* an individual's value for a certain predictor.
+- Counterfactual appears to have causality embedded in interpretation?
+
+# 3.3: Interactions
+
+## Variable encoing
+- Binary variables give different intercepts to different subgroups
+- Use interactions between binary and continuous predictors to give different slopes to different groups
+- As an example, consider IQ score comparisons between children and their mothers, with binary for mother completed HS: `y ~ 1 + mom_hs + mom_iq + mom_hs*mom_iq`
+- `mom_hs` gives the difference of intercepts
+- interaction terms gives the difference between slopes for kids whose mom went to HS versus not.
+
+# 3.4: Inference
+
+- Note the above model has 4 *predictors* (coefficients) but only 2 *inputs*
+- Notation: `X_i*B = X_i1*B_1 + ... + X_ik*B_k`.
+- Notation: `y_i = X_i*B + e_i`
+- Alternatively: `y_i ~ N(X_i*B, \sigma**2)` where `\sigma**2` is that variance of the `e_i`.
+
+Fitting models in R
+```{r}
+fit <- lm(mpg ~ 1 + cyl + wt, mtcars)
+summary(fit)
+```
+Plotting the actual vs predicted values. Are the errors correlated?
+```{r}
+# Compute rediduals
+outcomes <- data.frame(mpg=mtcars$mpg)
+outcomes$hat <- predict.lm(fit, mtcars)
+outcomes$res <- apply(outcomes, 1, function(x) {x["mpg"]-x["hat"]})
+# Plot residuals
+ggplot(outcomes, aes(x=mpg, y=hat, color=res)) +
+    geom_point() +
+    ggtitle("Actual vs. predicted values\nmpg ~ 1 + wt + cyl")
+# Do errors correlate to actual outcomes?
+sprintf("Cov(mpg, res) = %.3f", cor(outcomes$mpg, outcomes$res))
+ggplot(outcomes, aes(x=mpg, y=res)) + geom_point()
+```
+This indicates that the model is better at predicting for low mpg cars.
+
+# 3.6
+
+Model assumtions, in most to least relevant order:
+- Validity: mental model. Will model be useful? Is sample representative? 
+- Linearity: Are transformations more appropriate? Consider multiplicative factors, etc.
+- Independence of errors: Errors are uncorrelated
+- Equal variance of errors?
+- Normality of errors
+
